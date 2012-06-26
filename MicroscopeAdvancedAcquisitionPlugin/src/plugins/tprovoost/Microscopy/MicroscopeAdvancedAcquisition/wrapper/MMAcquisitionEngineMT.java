@@ -31,6 +31,8 @@ import mmcorej.PropertySetting;
 import mmcorej.StrVector;
 import mmcorej.TaggedImage;
 
+import org.json.JSONObject;
+import org.micromanager.acquisition.VirtualAcquisitionDisplay;
 import org.micromanager.api.AcquisitionEngine;
 import org.micromanager.api.DataProcessor;
 import org.micromanager.api.ImageCache;
@@ -174,7 +176,7 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 	}
 
 	public void setChannels(ArrayList<ChannelSpec> ch) {
-		_requestedChannels = ch;
+		_requestedChannels = new ArrayList<ChannelSpec>(ch);
 		if (_requestedChannels.size() == 0 || !useChannelsSetting_) {
 			_channels = new ArrayList<ChannelSpec>();
 			ChannelSpec cs = new ChannelSpec();
@@ -212,11 +214,14 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		return _core.getChannelGroup();
 	}
 
+	@Override
 	public String acquire() throws MMException {
 		cleanup();
-		_plugin.notifyAcquisitionStarted(true);
+		if (_plugin != null)
+			_plugin.notifyAcquisitionStarted(true);
 		_nbImagesAcquired = 0;
-		_plugin.notifyProgress(0);
+		if (_plugin != null)
+			_plugin.notifyProgress(0);
 		zStage_ = _core.getFocusDevice();
 		if (zStage_ == null)
 			throw new MMException("No Z Stage !");
@@ -266,6 +271,7 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		return "";
 	}
 
+	@Override
 	public void clear() {
 		_channels.clear();
 		_numFramesDone = 0;
@@ -299,16 +305,19 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		return addChannel(config, exp, Boolean.valueOf(true), zOffset, c8, c16, skip, c);
 	}
 
+	@Override
 	public void setFrames(int numFrames, double deltaT) {
 		requestedNumFrames_ = numFrames;
 		frameIntervalMs_ = deltaT;
 		_numFrames = useFramesSetting_ ? requestedNumFrames_ : 1;
 	}
 
+	@Override
 	public int getCurrentFrameCount() {
 		return _numFramesDone;
 	}
 
+	@Override
 	public void setSlices(double bottom, double top, double zStep, boolean absolute) {
 		absoluteZ_ = absolute;
 		bottomZPos_ = bottom;
@@ -335,13 +344,16 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		return sliceDeltaZ_.length;
 	}
 
+	@Override
 	public void setZStageDevice(String label) {
 		zStage_ = label;
 	}
 
+	@Override
 	public void setComment(String txt) {
 	}
 
+	@Override
 	public String getFirstConfigGroup() {
 		if (_core == null)
 			return new String("");
@@ -352,6 +364,7 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 			return getAvailableGroups()[0];
 	}
 
+	@Override
 	public String[] getChannelConfigs() {
 		if (_core == null)
 			return new String[0];
@@ -359,6 +372,7 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 			return _core.getAvailableConfigs(_core.getChannelGroup()).toArray();
 	}
 
+	@Override
 	public boolean isConfigAvailable(String config) {
 		StrVector vcfgs = _core.getAvailableConfigs(_core.getChannelGroup());
 		for (int i = 0; (long) i < vcfgs.size(); i++)
@@ -368,6 +382,7 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		return false;
 	}
 
+	@Override
 	public String[] getCameraConfigs() {
 		if (_core == null)
 			return new String[0];
@@ -379,30 +394,37 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		return cfgs;
 	}
 
+	@Override
 	public int getNumFrames() {
 		return requestedNumFrames_;
 	}
 
+	@Override
 	public double getFrameIntervalMs() {
 		return frameIntervalMs_;
 	}
 
+	@Override
 	public double getSliceZBottomUm() {
 		return bottomZPos_;
 	}
 
+	@Override
 	public double getSliceZStepUm() {
 		return deltaZ_;
 	}
 
+	@Override
 	public double getZTopUm() {
 		return topZPos_;
 	}
 
+	@Override
 	public void setChannel(int row, ChannelSpec channel) {
 		_requestedChannels.set(row, channel);
 	}
 
+	@Override
 	public void setUpdateLiveWindow(boolean flag) {
 	}
 
@@ -410,6 +432,7 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		return acquisitionLagging_;
 	}
 
+	@Override
 	public void setCameraConfig(String cfg) {
 		cameraConfig_ = cfg;
 	}
@@ -420,10 +443,10 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		acqFinished_ = false;
 		_numFramesDone = 0;
 		// Runtime.getRuntime().gc();
-//		for (int i = 0; i < _channels.size(); i++) {
-//			_channels.get(i).min_ = 65535D;
-//			_channels.get(i).max_ = 0.0D;
-//		}
+		// for (int i = 0; i < _channels.size(); i++) {
+		// _channels.get(i).min_ = 65535D;
+		// _channels.get(i).max_ = 0.0D;
+		// }
 
 		if (!saveFiles_ || saveFiles_ && !singleWindow_) {
 			long freeBytes = MemoryUtils.freeMemory();
@@ -583,7 +606,7 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		} catch (Exception e) {
 			terminate();
 			// System.out.println("Exception");
-			// e.printStackTrace();
+			 e.printStackTrace();
 			return;
 		}
 		if (abortWasRequested || _numFramesDone >= _numFrames)
@@ -606,7 +629,8 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 			}
 		}
 		try {
-			_plugin.notifyAcquisitionOver();
+			if (_plugin != null)
+				_plugin.notifyAcquisitionOver();
 			stop(false);
 			restoreSystem();
 			acqFinished_ = true;
@@ -1003,6 +1027,7 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		if (useSliceSetting_)
 			numSlices = sliceDeltaZ_.length;
 		_actual_seq = createSequence(type, numSlices, _numFrames);
+		Icy.addSequence(_actual_seq);
 		Calendar calendar = Calendar.getInstance();
 		String sequence_name = "" + calendar.get(Calendar.MONTH) + "_" + calendar.get(Calendar.DAY_OF_MONTH) + "_" + calendar.get(Calendar.YEAR) + "-"
 				+ calendar.get(Calendar.HOUR_OF_DAY) + "_" + calendar.get(Calendar.MINUTE) + "_" + calendar.get(Calendar.SECOND);
@@ -1014,7 +1039,10 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		}
 		_actual_seq.setName(sequence_name);
 		_list_seq.add(_actual_seq);
-		Icy.addSequence(_actual_seq);
+	}
+	
+	public ArrayList<MicroscopeSequence> getSequences() { 
+		return _list_seq;
 	}
 
 	/**
@@ -1294,7 +1322,8 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		}
 		++_nbImagesAcquired;
 		double progress = 1.0D * _nbImagesAcquired / _totalImages * 100;
-		_plugin.notifyProgress((int) progress);
+		if (_plugin != null)
+			_plugin.notifyProgress((int) progress);
 
 	}
 
@@ -1366,18 +1395,22 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		}
 	}
 
+	@Override
 	public boolean isFramesSettingEnabled() {
 		return useFramesSetting_;
 	}
 
+	@Override
 	public void enableFramesSetting(boolean enable) {
 		useFramesSetting_ = enable;
 	}
 
+	@Override
 	public boolean isChannelsSettingEnabled() {
 		return useChannelsSetting_;
 	}
 
+	@Override
 	public void enableChannelsSetting(boolean enable) {
 		useChannelsSetting_ = enable;
 	}
@@ -1396,6 +1429,7 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 		return lastImageFilePath_;
 	}
 
+	@Override
 	public boolean abortRequest() {
 		abortRequest_ = true;
 		return abortRequest_;
@@ -1626,7 +1660,7 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 	@Override
 	public void enableCustomTimeIntervals(boolean arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -1644,13 +1678,13 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 	@Override
 	public void setAcqOrderMode(int arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setCustomTimeIntervals(double[] arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -1662,23 +1696,32 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 	@Override
 	public void attachRunnable(int arg0, int arg1, int arg2, int arg3, Runnable arg4) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void clearRunnables() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeImageProcessor(DataProcessor<TaggedImage> arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setParentGUI(ScriptInterface parent) {
-		parentGUI_ = parent;		
+		parentGUI_ = parent;
+	}
+
+	public JSONObject getSummaryMetadata() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public VirtualAcquisitionDisplay getDisplay() {
+		return null;
 	}
 }

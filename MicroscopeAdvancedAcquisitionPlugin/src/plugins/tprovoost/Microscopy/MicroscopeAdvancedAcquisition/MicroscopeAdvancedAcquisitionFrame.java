@@ -8,7 +8,6 @@ import java.awt.Dimension;
 
 import mmcorej.CMMCore;
 import plugins.tprovoost.Microscopy.MicroManagerForIcy.MMMainFrame;
-import plugins.tprovoost.Microscopy.MicroManagerForIcy.ConfigWrapper.FakeScriptInterfacer;
 import plugins.tprovoost.Microscopy.MicroscopeAdvancedAcquisition.wrapper.AcqControlDlg;
 import plugins.tprovoost.Microscopy.MicroscopeAdvancedAcquisition.wrapper.MMAcquisitionEngineMT;
 
@@ -25,7 +24,7 @@ public class MicroscopeAdvancedAcquisitionFrame extends IcyFrame {
 		_logo_remote.setPreferredSize(new Dimension(0, 80));
 		add(_logo_remote, BorderLayout.NORTH);
 		
-		_acqdialog = new AcqControlDlg(engine,null ,new FakeScriptInterfacer(gui));
+		_acqdialog = new AcqControlDlg(engine,null ,gui);
 		_acqdialog.setPreferredSize(new Dimension(515, 620));
 		add(_acqdialog);
 		setVisible(true);
