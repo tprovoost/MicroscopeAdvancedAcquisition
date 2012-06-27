@@ -31,6 +31,8 @@ import mmcorej.PropertySetting;
 import mmcorej.StrVector;
 import mmcorej.TaggedImage;
 
+import org.json.JSONObject;
+import org.micromanager.api.AcquisitionDisplay;
 import org.micromanager.api.AcquisitionEngine;
 import org.micromanager.api.DataProcessor;
 import org.micromanager.api.ImageCache;
@@ -1680,5 +1682,15 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 	@Override
 	public void setParentGUI(ScriptInterface parent) {
 		parentGUI_ = parent;		
+	}
+
+	@Override
+	public JSONObject getSummaryMetadata() {
+		return null;
+	}
+
+	@Override
+	public AcquisitionDisplay getDisplay() {
+		return null;
 	}
 }

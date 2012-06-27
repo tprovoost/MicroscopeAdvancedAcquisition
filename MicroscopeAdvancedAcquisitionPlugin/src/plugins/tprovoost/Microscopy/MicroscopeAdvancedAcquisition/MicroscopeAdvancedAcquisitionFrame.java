@@ -7,10 +7,11 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import mmcorej.CMMCore;
+
+import org.micromanager.api.AcquisitionEngine;
+
 import plugins.tprovoost.Microscopy.MicroManagerForIcy.MMMainFrame;
-import plugins.tprovoost.Microscopy.MicroManagerForIcy.ConfigWrapper.FakeScriptInterfacer;
 import plugins.tprovoost.Microscopy.MicroscopeAdvancedAcquisition.wrapper.AcqControlDlg;
-import plugins.tprovoost.Microscopy.MicroscopeAdvancedAcquisition.wrapper.MMAcquisitionEngineMT;
 
 public class MicroscopeAdvancedAcquisitionFrame extends IcyFrame {
 
@@ -18,14 +19,14 @@ public class MicroscopeAdvancedAcquisitionFrame extends IcyFrame {
 	
 	/** Acquisition Panel for multi-D acquisition */
 	private AcqControlDlg _acqdialog;
-	private MicroscopeAdvancedAcquisitionFrame(MMAcquisitionEngineMT engine,CMMCore core, MMMainFrame gui) {
+	private MicroscopeAdvancedAcquisitionFrame(AcquisitionEngine engine,CMMCore core, MMMainFrame gui) {
 		super("Control Dialog",false, true,false, true);
 		
 		IcyLogo _logo_remote = new IcyLogo("Microscope Advanced Acquisition");
 		_logo_remote.setPreferredSize(new Dimension(0, 80));
 		add(_logo_remote, BorderLayout.NORTH);
 		
-		_acqdialog = new AcqControlDlg(engine,null ,new FakeScriptInterfacer(gui));
+		_acqdialog = new AcqControlDlg(engine,null ,gui);
 		_acqdialog.setPreferredSize(new Dimension(515, 620));
 		add(_acqdialog);
 		setVisible(true);
@@ -61,7 +62,7 @@ public class MicroscopeAdvancedAcquisitionFrame extends IcyFrame {
 	 * @return instance or new instance of the MMMainFrame
 	 * @see dispose(), getInstance()
 	 */
-	public static MicroscopeAdvancedAcquisitionFrame getInstance(MMAcquisitionEngineMT engine, CMMCore core, MMMainFrame gui) {
+	public static MicroscopeAdvancedAcquisitionFrame getInstance(AcquisitionEngine engine, CMMCore core, MMMainFrame gui) {
 		if (_singleton == null) {
 			_singleton = new MicroscopeAdvancedAcquisitionFrame(engine,core, gui);
 			return _singleton;

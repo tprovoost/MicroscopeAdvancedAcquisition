@@ -4,19 +4,20 @@ import icy.gui.frame.IcyFrameAdapter;
 import icy.gui.frame.IcyFrameEvent;
 import icy.gui.frame.progress.AnnounceFrame;
 
+import org.micromanager.api.AcquisitionEngine;
 import org.micromanager.utils.StateItem;
 
 import plugins.tprovoost.Microscopy.MicroManagerForIcy.MicroscopePluginAcquisition;
-import plugins.tprovoost.Microscopy.MicroscopeAdvancedAcquisition.wrapper.MMAcquisitionEngineMT;
 
 public class MicroscopeAdvancedAcquisitionPlugin extends MicroscopePluginAcquisition {
 
 	private MicroscopeAdvancedAcquisitionFrame _frame;
-	MMAcquisitionEngineMT engine;
+	AcquisitionEngine engine;
 
 	@Override
 	public void start() {
-		engine = new MMAcquisitionEngineMT(this, mainGui);
+//		engine = new MMAcquisitionEngineMT(this, mainGui);
+		engine = mainGui.getAcquisitionEngine();
 		initEngine();
 		_frame = MicroscopeAdvancedAcquisitionFrame.getInstance(engine, mCore, mainGui);
 		if (_frame == null) {

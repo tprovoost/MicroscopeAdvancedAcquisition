@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="plugins/tprovoost/Microscopy/MicroscopeAdvancedAcquisition/wrapper/MMAcquisitionEngineMT.java" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MicromanagerPlugin"/>
 	<classpathentry kind="lib" path="/Icy-App/lib/MMAcqEngine.jar"/>
 	<classpathentry kind="lib" path="/Icy-App/lib/MMCoreJ.jar"/>
-	<classpathentry kind="lib" path="/Icy-App/lib/MMJ_.jar"/>
 	<classpathentry kind="lib" path="/Icy-App/icy.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/mmstudio"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
