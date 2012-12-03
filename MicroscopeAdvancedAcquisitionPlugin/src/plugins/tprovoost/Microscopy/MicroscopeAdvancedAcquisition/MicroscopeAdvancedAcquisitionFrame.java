@@ -11,7 +11,7 @@ import mmcorej.CMMCore;
 import org.micromanager.api.AcquisitionEngine;
 
 import plugins.tprovoost.Microscopy.MicroManagerForIcy.MMMainFrame;
-import plugins.tprovoost.Microscopy.MicroscopeAdvancedAcquisition.wrapper.AcqControlDlg;
+import plugins.tprovoost.Microscopy.MicroManagerForIcy.ConfigWrapper.AcqControlDlg;
 
 public class MicroscopeAdvancedAcquisitionFrame extends IcyFrame {
 

@@ -19,21 +19,21 @@ public class MicroscopeAdvancedAcquisitionPlugin extends MicroscopePluginAcquisi
 //		engine = new MMAcquisitionEngineMT(this, mainGui);
 		engine = mainGui.getAcquisitionEngine();
 		initEngine();
-		_frame = MicroscopeAdvancedAcquisitionFrame.getInstance(engine, mCore, mainGui);
-		if (_frame == null) {
-			new AnnounceFrame("Only one Advanced Acquisition plugin at a time.");
-			return;
-		}
-		_frame.addFrameListener(new IcyFrameAdapter() {
-			@Override
-			public void icyFrameClosed(IcyFrameEvent e) {
-				super.icyFrameClosed(e);
-				MicroscopeAdvancedAcquisitionFrame.dispose();
-				mainGui.removePlugin(MicroscopeAdvancedAcquisitionPlugin.this);
-			}
-		});
-		_frame.setVisible(true);
-		mainGui.addPlugin(this);
+	_frame = MicroscopeAdvancedAcquisitionFrame.getInstance(engine, mCore, mainGui);
+	if (_frame == null) {
+	    new AnnounceFrame("Only one Advanced Acquisition plugin at a time.");
+	    return;
+	}
+	_frame.addFrameListener(new IcyFrameAdapter() {
+	    @Override
+	    public void icyFrameClosed(IcyFrameEvent e) {
+		super.icyFrameClosed(e);
+		MicroscopeAdvancedAcquisitionFrame.dispose();
+		mainGui.removePlugin(MicroscopeAdvancedAcquisitionPlugin.this);
+	    }
+	});
+	_frame.setVisible(true);
+	mainGui.addPlugin(this);
 	}
 
 	@Override
