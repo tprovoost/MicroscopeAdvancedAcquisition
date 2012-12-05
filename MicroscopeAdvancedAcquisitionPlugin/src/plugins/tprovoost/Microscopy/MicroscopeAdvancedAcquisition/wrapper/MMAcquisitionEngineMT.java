@@ -1559,7 +1559,7 @@ public class MMAcquisitionEngineMT implements AcquisitionEngine, ViewerListener 
 				}
 			}
 			if (!coreLogInitialized_) {
-				_core.initializeLogging();
+				// _core.initializeLogging();
 				coreLogInitialized_ = true;
 			}
 			if (_pause) {
