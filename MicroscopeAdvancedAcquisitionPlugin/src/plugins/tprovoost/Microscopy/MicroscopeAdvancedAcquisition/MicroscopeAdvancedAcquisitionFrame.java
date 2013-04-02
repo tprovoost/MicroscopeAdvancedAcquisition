@@ -72,7 +72,7 @@ public class MicroscopeAdvancedAcquisitionFrame extends IcyFrame {
 	 * Destroys the actual singleton.
 	 * @see  getInstance(), newInstance()
 	 */
-	public static void dispose() {
+    public static void delete() {
 		_singleton = null;
 	}
 	
